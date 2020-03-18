@@ -25,3 +25,4 @@ yarn-error.log*
 # API backend
 /api/venv
 /api/__pycache__
+/api/data.sqlite
