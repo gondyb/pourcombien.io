@@ -141,11 +141,26 @@ class ReverseGame(graphene.Mutation):
 
         return ReverseGame(game=game)
 
+class DeleteGame(graphene.Mutation):
+    class Arguments:
+        game_id = graphene.Int(required=True)
+
+    ok = graphene.Boolean()
+
+    def mutate(self, info, game_id):
+        game = Game.query.filter_by(uuid=game_id).first()
+
+        db.session.delete(game)
+        db.session.commit()
+
+        return DeleteGame(ok=True)
+
 class Mutation(graphene.ObjectType):
     new_game = NewGame.Field()
     join_game = JoinGame.Field()
     play = PlayGame.Field()
     reverse = ReverseGame.Field()
+    delete_game = DeleteGame.Field()
         
 schema = graphene.Schema(query=Query, mutation=Mutation)
 
