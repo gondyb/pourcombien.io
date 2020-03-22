@@ -20,7 +20,7 @@ function App(props) {
   return (    
     <ApolloProvider client={props.client}>
     <div>
-      <h2>Pour combien ? <span role="img" aria-label="Emoji pensif">🤔</span></h2>
+      <h2>PourCombien.io <span role="img" aria-label="Emoji pensif">🤔</span></h2>
     </div>
 
     <Router>
