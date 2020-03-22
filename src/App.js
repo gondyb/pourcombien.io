@@ -1,25 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
 import './App.css';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from 'react-router-dom';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+import { ApolloProvider } from '@apollo/react-hooks';
+import AdminPage from './components/AdminPage';
+import NewGamePage from './components/NewGamePage';
+import PlayPage from './components/PlayPage';
+
+function App(props) {
+  useEffect(() => {
+    document.title = "pourcombien.io"
+  }, []);
+
+  return (    
+    <ApolloProvider client={props.client}>
+    <div>
+      <h2>Pour combien ? <span role="img" aria-label="Emoji pensif">🤔</span></h2>
     </div>
+
+    <Router>
+      <Switch>
+        <Route exact path="/admin" component={AdminPage} />
+        <Route exact path="/play/:id/:player" component={PlayPage} />
+        <Route exact path="/play/:id" component={PlayPage} />
+        <Route exact path="/" component={NewGamePage} />
+      </Switch>
+    </Router>
+  </ApolloProvider>
   );
 }
 

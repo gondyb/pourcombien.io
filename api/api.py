@@ -5,12 +5,15 @@ import os, enum
 
 import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
+from graphql_relay.node.node import from_global_id
+from flask_cors import CORS
 
 from flask_graphql import GraphQLView
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+CORS(app)
 app.debug = True
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')
@@ -84,13 +87,14 @@ class NewGame(graphene.Mutation):
 
 class JoinGame(graphene.Mutation):
     class Arguments:
-        uuid = graphene.Int(required=True)
+        id = graphene.ID(required=True)
         second_player = graphene.String(required=True)
         how_many = graphene.Int(required=True)
 
     game = graphene.Field(lambda: GameObject)
 
-    def mutate(self, info, uuid, second_player, how_many):
+    def mutate(self, info, id, second_player, how_many):
+        uuid = from_global_id(id)[1]
         game = Game.query.filter_by(uuid=uuid).first()
 
         game.second_player = second_player
@@ -103,13 +107,14 @@ class JoinGame(graphene.Mutation):
 
 class PlayGame(graphene.Mutation):
     class Arguments:
-        game_id = graphene.Int(required=True)
+        game_id = graphene.ID(required=True)
         player = graphene.Int(required=True)
         choice = graphene.Int(required=True)
 
     game = graphene.Field(lambda: GameObject)
 
     def mutate(self, info, game_id, player, choice):
+        game_id = from_global_id(game_id)[1]
         game = Game.query.filter_by(uuid=game_id).first()
 
         choice = Choice(game=game, player_number=player, number_selected=choice)
@@ -128,11 +133,12 @@ class PlayGame(graphene.Mutation):
 
 class ReverseGame(graphene.Mutation):
     class Arguments:
-        game_id = graphene.Int(required=True)
+        game_id = graphene.ID(required=True)
 
     game = graphene.Field(lambda: GameObject)
 
     def mutate(self, info, game_id):
+        game_id = from_global_id(game_id)[1]
         game = Game.query.filter_by(uuid=game_id).first()
 
         game.status = GameStatusEnum.reversed
